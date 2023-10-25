@@ -1,0 +1,1 @@
+(()=>{const e=document.head,t=Array.from(e.querySelectorAll("meta")).map((e=>({name:e.getAttribute("name"),content:e.getAttribute("content")}))),n=t.find((e=>"fb4s-auth-user-email"===e.name)),m=t.find((e=>"fb4s-listing-mls"===e.name)),a=n?n.content:"N/A",i=m?m.content:"N/A";chrome.runtime.sendMessage({userEmail:a,listingId:i})})();
