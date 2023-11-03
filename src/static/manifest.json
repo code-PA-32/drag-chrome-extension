@@ -2,7 +2,6 @@
   "manifest_version": 3,
   "name": "Find Businesses 4 Sale",
   "description": "Find Businesses 4 Sale",
-  "author": "Oleksandr Vernichenko <code-PA-32>",
   "version": "1.0.0",
   "icons": {
     "16": "icon.png",

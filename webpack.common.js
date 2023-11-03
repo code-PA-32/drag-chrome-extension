@@ -33,7 +33,8 @@ module.exports = {
     new HtmlWebpackPlugin( {
       title: "React Chrome Extension",
       filename: "popup.html",
-      chunks: ["popup"]
+      chunks: ["popup"],
+      template: path.resolve("src/popup/popup.html")
     } )
   ],
   resolve: {
