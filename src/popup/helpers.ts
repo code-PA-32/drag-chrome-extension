@@ -9,20 +9,20 @@ export const getMetaData = async () => {
   return await chrome.storage.local.get(["metaData"]).then((result: MetaData) => result.metaData);
 };
 
-export const getData = async (id: string) => {
-  let data = "test";
-  if (id) {
+export const getEmailByID = async (id: string) => {
+  if (!id) return;
+  try {
     const response = await fetch(
       `https://api.pipedrive.com/v1/deals/${id}?api_token=3bfa120858adfd568037072d7e75886d7f10e4c5`
     );
     const res = await response.json();
-    data = res["data"]["d11fae2f25edbec3ee6f6b954fc5bcbc79b04baf"].replace(
-      "https://findbusinesses4sale.retool.com/embedded/public/5930af07-b2d5-4070-90d3-9e863e2b1c03?is_market_leader=true&email_value=",
-      ""
-    );
+    const url = new URL(res.data["d11fae2f25edbec3ee6f6b954fc5bcbc79b04baf"])
+    return url.searchParams.get("email_value")
+  } catch (e) {
+    console.info(e)
   }
-  return data;
 };
+
 const options = {
   method: "GET",
   headers: {
@@ -30,15 +30,17 @@ const options = {
     Authorization: `Basic ${btoa("fka_07EXxVqqM3qQR2Zp74Ll35Oi5J9glTgQ9I")}`,
   },
 };
-export const getData2 = async (id: string) => {
-  let data: any;
-  if (id) {
-    data = await fetch(
-      `https://api.followupboss.com/v1/people/${id}`,
+export const getChatID = async (id: string): Promise<{ customFB4SLeadID: string, id: number } | null> => {
+  if (!id) return;
+  try {
+    const res = await fetch(
+      `https://api.followupboss.com/v1/people/${id}?fields=customFB4SLeadID`,
       options
     );
-    const res = await data.json();
-    data = res["emails"][0]["value"];
+    const data = await res.json();
+    if (data.customFB4SLeadID) return data;
+    return null;
+  } catch (e) {
+    console.info(e)
   }
-  return data;
 };
