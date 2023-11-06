@@ -1,20 +1,12 @@
-import cryptoJS from "crypto-js";
 interface MetaData {
   metaData: {
     listingId: string;
     userEmail: string;
   }
 }
-const ciphertext = cryptoJS.AES.encrypt('my message', 'secret key 123').toString();
-export default ciphertext
 
 export const getMetaData = async () => {
-  let data: MetaData;
-  await chrome.storage.local.get(["metaData"]).then((result: MetaData) => {
-    data = result;
-  });
-  console.log(data, "from helpers script")
-  return { data };
+  return await chrome.storage.local.get(["metaData"]).then((result: MetaData) => result.metaData);
 };
 
 export const getData = async (id: string) => {
