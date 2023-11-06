@@ -25,7 +25,10 @@
   "content_scripts": [
     {
       "matches": [
-        "<all_urls>"
+        "https://www.findbusinesses4sale.com/listing/*",
+        "https://www.findbusinesses4sale.com/commercial-listing/*",
+        "https://findbusinessesforsale.pipedrive.com/deal/*",
+        "https://manojkukreja.followupboss.com/2/people/view/*"
       ],
       "js": [
         "content.js"

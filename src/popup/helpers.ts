@@ -6,13 +6,15 @@ interface MetaData {
   }
 }
 const ciphertext = cryptoJS.AES.encrypt('my message', 'secret key 123').toString();
+export default ciphertext
 
 export const getMetaData = async () => {
   let data: MetaData;
   await chrome.storage.local.get(["metaData"]).then((result: MetaData) => {
     data = result;
   });
-  return {data};
+  console.log(data, "from helpers script")
+  return { data };
 };
 
 export const getData = async (id: string) => {
