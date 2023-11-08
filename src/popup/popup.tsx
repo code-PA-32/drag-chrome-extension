@@ -2,20 +2,19 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { Iframe } from "./iframe";
 import { ErrorMessage } from "./error-message";
-import { getEmailByID, getChatID, getMetaData } from "./helpers";
-import cryptoJS from "crypto-js";
+import { getEmailByID, getChatID, getMetaData, encryptedAndEncodeURLKey } from "./helpers";
 
 const appContainer = document.getElementById("app");
 const IframeData = () => {
   const [iframeContent, setIframeContent] = useState(null);
 
   useEffect(() => {
-    chrome.storage.local.get(["currentUrl"]).then(async (result) => {
-      const url = new URL(result.currentUrl);
-      const baseUrl = url.origin + url.pathname;
-      const pathNames = url.pathname.split("/") ?? [];
-      const id = pathNames[pathNames.length - 1] ?? "";
-      const metaData = await getMetaData();
+    chrome.storage.local.get(["currentUrl"]).then(async (result): Promise<void> => {
+      const url: URL = new URL(result.currentUrl);
+      const baseUrl: string = url.origin + url.pathname;
+      const pathNames: string[] = url.pathname.split("/") ?? [];
+      const id: string = pathNames[pathNames.length - 1] ?? "";
+      const metaData: { listingId: string, userEmail: string } = await getMetaData();
 
       if (baseUrl.includes("https://www.findbusinesses4sale.com/listing") || baseUrl.includes("https://www.findbusinesses4sale.com/commercial-listing")) {
 
@@ -28,8 +27,9 @@ const IframeData = () => {
           return;
         }
 
-        const encrypted_emailFBS = cryptoJS.AES.encrypt(metaData.userEmail, "FB4S").toString()
-        const encrypted_profile_keyFBS = cryptoJS.AES.encrypt(metaData.listingId, "FB4S").toString()
+        const encrypted_emailFBS: string = encryptedAndEncodeURLKey(metaData.userEmail)
+        const encrypted_profile_keyFBS: string = encryptedAndEncodeURLKey(metaData.listingId)
+
         setIframeContent(
           <Iframe
             url={`https://findbusinesses4sale.retool.com/embedded/public/74e99d98-a3b8-4cf2-b901-6cac17f48bcf?chrome_extension_key=${encrypted_emailFBS}&profile_key=${encrypted_profile_keyFBS}`}/>
@@ -46,7 +46,7 @@ const IframeData = () => {
           return;
         }
 
-        const encrypted_emailBRK = cryptoJS.AES.encrypt(metaData.userEmail, "FB4S").toString()
+        const encrypted_emailBRK: string = encryptedAndEncodeURLKey(metaData.userEmail)
         setIframeContent(
           <Iframe
             url={`https://findbusinesses4sale.retool.com/embedded/public/cf559bd3-933a-4a04-9687-3ebaa3e0570f?chrome_extension_key=${encrypted_emailBRK}`}/>
@@ -54,7 +54,7 @@ const IframeData = () => {
         return;
       } else if (baseUrl.includes("https://findbusinessesforsale.pipedrive.com/deal")) {
 
-        const userEmail = await getEmailByID(id);
+        const userEmail: string = await getEmailByID(id);
         if (!userEmail) {
           setIframeContent(
             <ErrorMessage
@@ -63,13 +63,13 @@ const IframeData = () => {
           console.info("An error occurred while getting data from Pipedrive, case: deal");
           return;
         }
-        const encrypted_emailPD = cryptoJS.AES.encrypt(userEmail, "FB4S").toString()
+        const encrypted_emailPD: string = encryptedAndEncodeURLKey(userEmail)
         setIframeContent(
           <Iframe
             url={`https://findbusinesses4sale.retool.com/embedded/public/37827805-e6f2-49a6-a7a1-8577d0d4669a?retool_dashboard_public_key=467f8c24-2333-49fe-9de8-3f58b085939e&profile_ekey=${encrypted_emailPD}`}/>
         );
       } else if (baseUrl.includes("https://manojkukreja.followupboss.com/2/people/view")) {
-        const base64 = await getChatID(id)
+        const base64: { customFB4SLeadID: string, id: number } = await getChatID(id)
         if (base64 === null) {
           setIframeContent(
             <ErrorMessage
@@ -79,7 +79,7 @@ const IframeData = () => {
           return;
         }
         const data: { chat_id: number } = JSON.parse(atob(base64.customFB4SLeadID))
-        const encrypted_chat_id = cryptoJS.AES.encrypt(data.chat_id.toString(), "FB4S").toString()
+        const encrypted_chat_id: string = encryptedAndEncodeURLKey(data.chat_id.toString())
         setIframeContent(
           <Iframe
             url={`https://findbusinesses4sale.retool.com/embedded/public/37827805-e6f2-49a6-a7a1-8577d0d4669a?retool_dashboard_public_key=467f8c24-2333-49fe-9de8-3f58b085939e&profile_ikey=${encrypted_chat_id}`}/>

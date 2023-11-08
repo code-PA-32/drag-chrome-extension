@@ -1,3 +1,5 @@
+import cryptoJS from "crypto-js";
+
 interface MetaData {
   metaData: {
     listingId: string;
@@ -5,11 +7,11 @@ interface MetaData {
   }
 }
 
-export const getMetaData = async () => {
+export const getMetaData = async (): Promise<{ listingId: string, userEmail: string }> => {
   return await chrome.storage.local.get(["metaData"]).then((result: MetaData) => result.metaData);
 };
 
-export const getEmailByID = async (id: string) => {
+export const getEmailByID = async (id: string): Promise<string> => {
   if (!id) return;
   try {
     const response = await fetch(
@@ -23,7 +25,7 @@ export const getEmailByID = async (id: string) => {
   }
 };
 
-const options = {
+const options: { method: string, headers: { accept: string, Authorization: string } } = {
   method: "GET",
   headers: {
     accept: "application/json",
@@ -44,3 +46,8 @@ export const getChatID = async (id: string): Promise<{ customFB4SLeadID: string,
     console.info(e)
   }
 };
+
+export const encryptedAndEncodeURLKey = (data: string): string => {
+  const encryptedData = cryptoJS.AES.encrypt(data, "BF4S").toString();
+  return encodeURIComponent(encryptedData)
+}
