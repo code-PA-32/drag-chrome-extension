@@ -9,7 +9,4 @@ const listingIdMeta = metaTags.find(meta => meta.name === 'fb4s-listing-mls');
 
 const userEmail: string | null = userEmailMeta ? userEmailMeta.content : null;
 const listingId: string | null = listingIdMeta ? listingIdMeta.content : null;
-
-console.log(userEmail, listingId)
-
 void chrome.runtime.sendMessage({ userEmail, listingId });

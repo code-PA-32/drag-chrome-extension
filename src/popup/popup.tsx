@@ -17,7 +17,7 @@ const IframeData = () => {
       const metaData: { listingId: string, userEmail: string } = await getMetaData();
 
       if (baseUrl.includes("https://www.findbusinesses4sale.com/listing") || baseUrl.includes("https://www.findbusinesses4sale.com/commercial-listing")) {
-
+        console.log(metaData, "in if block")
         if (metaData.listingId === "N/A" || metaData.userEmail === "N/A") {
           setIframeContent(
             <ErrorMessage
@@ -35,8 +35,7 @@ const IframeData = () => {
             url={`https://findbusinesses4sale.retool.com/embedded/public/74e99d98-a3b8-4cf2-b901-6cac17f48bcf?chrome_extension_key=${encrypted_emailFBS}&profile_key=${encrypted_profile_keyFBS}`}/>
         );
         return;
-      } else if (baseUrl.includes("https://www.findbusinesses4sale.com/broker-dashboard")) {
-
+      } else if (baseUrl.includes("https://www.findbusinesses4sale.com/broker-dashboard/")) {
         if (metaData.userEmail === "N/A") {
           setIframeContent(
             <ErrorMessage
@@ -73,9 +72,9 @@ const IframeData = () => {
         if (base64 === null) {
           setIframeContent(
             <ErrorMessage
-              err="An error occurred while getting data from FollowUpBoss, case: chat"/>
+              err="An error occurred while getting data from FollowUpBoss"/>
           );
-          console.info("An error occurred while getting data from FollowUpBoss, case: chat");
+          console.info("An error occurred while getting data from FollowUpBoss");
           return;
         }
         const data: { chat_id: number } = JSON.parse(atob(base64.customFB4SLeadID))
@@ -88,9 +87,9 @@ const IframeData = () => {
       } else {
         setIframeContent(
           <ErrorMessage
-            err="General Error"/>
+            err="This page is out of ecosystem"/>
         );
-        console.info("Base error");
+        console.info("This page is out of ecosystem");
         return;
       }
     });
