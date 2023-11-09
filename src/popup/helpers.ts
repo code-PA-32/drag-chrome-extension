@@ -1,14 +1,8 @@
 import cryptoJS from "crypto-js";
 
-interface MetaData {
-  metaData: {
-    listingId: string;
-    userEmail: string;
-  }
-}
-
 export const getMetaData = async (): Promise<{ listingId: string, userEmail: string }> => {
-  return await chrome.storage.local.get(["metaData"]).then((result: MetaData) => result.metaData);
+  const data = await chrome.storage.local.get(["metaData"]);
+  return data.metaData
 };
 
 export const getEmailByID = async (id: string): Promise<string> => {
