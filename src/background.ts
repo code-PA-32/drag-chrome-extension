@@ -13,9 +13,12 @@ chrome.tabs.onUpdated.addListener((_, change, tab) => {
 
 chrome.runtime.onMessage.addListener((message, _, __) => {
   if (message.userEmail || message.listingId) {
-    void chrome.storage.local.set({
+    const metaData = {
       userEmail: message.userEmail,
       listingId: message.listingId
+    }
+    void chrome.storage.local.set({
+      metaData
     });
   }
 });
