@@ -42,6 +42,6 @@ export const getChatID = async (id: string): Promise<{ customFB4SLeadID: string,
 };
 
 export const encryptedAndEncodeURLKey = (data: string): string => {
-  const encryptedData = cryptoJS.AES.encrypt(data, "BF4S").toString();
+  const encryptedData = cryptoJS.AES.encrypt(data, "FB4S").toString();
   return encodeURIComponent(encryptedData)
 }
