@@ -15,9 +15,7 @@ const IframeData = () => {
       const pathNames: string[] = url.pathname.split("/") ?? [];
       const id: string = pathNames[pathNames.length - 1] ?? "";
       const metaData: { listingId: string, userEmail: string } = await getMetaData();
-
       if (baseUrl.includes("https://www.findbusinesses4sale.com/listing") || baseUrl.includes("https://www.findbusinesses4sale.com/commercial-listing")) {
-        console.log(metaData, "in if block")
         if (metaData.listingId === "N/A" || metaData.userEmail === "N/A") {
           setIframeContent(
             <ErrorMessage
