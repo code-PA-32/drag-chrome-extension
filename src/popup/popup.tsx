@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { Iframe } from "./iframe";
 import { ErrorMessage } from "./error-message";
-import { getEmailByID, getChatID, getMetaData, encryptedAndEncodeURLKey } from "./helpers";
+import { getEmailByID, getChatID, getMetaData, encryptedAndEncodeURLKey, getFUBBootstrapData } from "./helpers";
 
 const appContainer = document.getElementById("app");
 const IframeData = () => {
@@ -77,9 +77,23 @@ const IframeData = () => {
         }
         const data: { chat_id: number } = JSON.parse(atob(base64.customFB4SLeadID))
         const encrypted_chat_id: string = encryptedAndEncodeURLKey(data.chat_id.toString())
+
+        const currentUserEmail: string = await getFUBBootstrapData();
+        console.log(currentUserEmail, "currentUSerEmail")
+        if (!currentUserEmail) {
+          setIframeContent(
+            <ErrorMessage
+              err="An error occurred while getting data from FollowUpBoss"/>
+          );
+          console.info("An error occurred while getting data from FollowUpBoss");
+          return;
+        }
+        const encrypted_current_user_emailFUB: string = encryptedAndEncodeURLKey
+        (currentUserEmail)
+        console.log(encrypted_current_user_emailFUB, "encrypted_current_user_emailFUB")
         setIframeContent(
           <Iframe
-            url={`https://findbusinesses4sale.retool.com/embedded/public/37827805-e6f2-49a6-a7a1-8577d0d4669a?retool_dashboard_public_key=467f8c24-2333-49fe-9de8-3f58b085939e&profile_ikey=${encrypted_chat_id}`}/>
+            url={`https://findbusinesses4sale.retool.com/embedded/public/37827805-e6f2-49a6-a7a1-8577d0d4669a?access_level_key=${encrypted_current_user_emailFUB}&profile_ikey=${encrypted_chat_id}`}/>
         );
         return;
       } else {

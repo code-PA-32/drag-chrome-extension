@@ -21,4 +21,9 @@ chrome.runtime.onMessage.addListener((message, _, __) => {
       metaData
     });
   }
+  if(message.scriptList){
+    const scriptList = message.scriptList;
+    void chrome.storage.local.set({ scriptList });
+  }
 });
+

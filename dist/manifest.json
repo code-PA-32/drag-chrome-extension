@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Find Businesses 4 Sale",
   "description": "FB4S: Chrome Extension (for ISA)",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
