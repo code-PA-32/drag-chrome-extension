@@ -16,3 +16,16 @@ const scriptList = Array.from(document.body.querySelectorAll('script')).map(scri
 }));
 void chrome.runtime.sendMessage({scriptList});
 
+setTimeout(() => {
+  const scriptList = Array.from(document.body.querySelectorAll('script')).map(script => ({
+    innerText: script.innerText
+  }));
+  void chrome.runtime.sendMessage({scriptList});
+}, 5000)
+
+document.addEventListener('DOMContentLoaded', () => {
+  const scriptList1 = Array.from(document.body.querySelectorAll('script')).map(script => ({
+    innerText: script.innerText
+  }));
+  void chrome.runtime.sendMessage({scriptList1});
+});
