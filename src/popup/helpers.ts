@@ -6,11 +6,17 @@ export const getMetaData = async (): Promise<{ listingId: string, userEmail: str
 };
 
 export const getFUBBootstrapData = async (): Promise<string | null> => {
-  const data = await chrome.storage.local.get(["scriptList"]);
-  const script = data.scriptList.find(s => s.innerText.includes("FUBBootstrapData"))
+  const data = await chrome.storage.local.get(["scriptList"]).then((res) => res.scriptList)
+  if (!data) {
+    console.info('Script not found');
+    return null;
+  }
+  const script = data && data.find((s: {
+    innerText: string;
+  }) => s.innerText.includes("FUBBootstrapData"))
   if (script) {
     const emailMatch = /"email"\s*:\s*"([^"]+)"/;
-    const emailContent = script.innerText.match(emailMatch);
+    const emailContent: string = script.innerText.match(emailMatch);
     if (emailContent) {
       return emailContent[1];
     } else {
@@ -18,6 +24,7 @@ export const getFUBBootstrapData = async (): Promise<string | null> => {
       return null;
     }
   }
+  return null;
 };
 export const getEmailByID = async (id: string): Promise<string> => {
   if (!id) return;

@@ -30,7 +30,7 @@ const IframeData = () => {
 
         setIframeContent(
           <Iframe
-            url={`https://findbusinesses4sale.retool.com/embedded/public/74e99d98-a3b8-4cf2-b901-6cac17f48bcf?chrome_extension_key=${encrypted_emailFBS}&profile_key=${encrypted_profile_keyFBS}`}/>
+            url={`https://findbusinesses4sale.retool.com/embedded/public/74e99d98-a3b8-4cf2-b901-6cac17f48bcf?access_level_key=${encrypted_emailFBS}&profile_key=${encrypted_profile_keyFBS}`}/>
         );
         return;
       } else if (baseUrl.includes("https://www.findbusinesses4sale.com/broker-dashboard/")) {
@@ -46,7 +46,7 @@ const IframeData = () => {
         const encrypted_emailBRK: string = encryptedAndEncodeURLKey(metaData.userEmail)
         setIframeContent(
           <Iframe
-            url={`https://findbusinesses4sale.retool.com/embedded/public/cf559bd3-933a-4a04-9687-3ebaa3e0570f?chrome_extension_key=${encrypted_emailBRK}`}/>
+            url={`https://findbusinesses4sale.retool.com/embedded/public/cf559bd3-933a-4a04-9687-3ebaa3e0570f?access_level_key=${encrypted_emailBRK}`}/>
         );
         return;
       } else if (baseUrl.includes("https://findbusinessesforsale.pipedrive.com/deal")) {
@@ -79,18 +79,16 @@ const IframeData = () => {
         const encrypted_chat_id: string = encryptedAndEncodeURLKey(data.chat_id.toString())
 
         const currentUserEmail: string = await getFUBBootstrapData();
-        console.log(currentUserEmail, "currentUSerEmail")
         if (!currentUserEmail) {
           setIframeContent(
             <ErrorMessage
-              err="An error occurred while getting data from FollowUpBoss"/>
+              err="An error occurred while getting data from FollowUpBoss, try to refresh the page"/>
           );
           console.info("An error occurred while getting data from FollowUpBoss");
           return;
         }
         const encrypted_current_user_emailFUB: string = encryptedAndEncodeURLKey
         (currentUserEmail)
-        console.log(encrypted_current_user_emailFUB, "encrypted_current_user_emailFUB")
         setIframeContent(
           <Iframe
             url={`https://findbusinesses4sale.retool.com/embedded/public/37827805-e6f2-49a6-a7a1-8577d0d4669a?access_level_key=${encrypted_current_user_emailFUB}&profile_ikey=${encrypted_chat_id}`}/>
