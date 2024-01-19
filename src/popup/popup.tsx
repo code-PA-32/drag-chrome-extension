@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { Iframe } from "./iframe";
 import { ErrorMessage } from "./error-message";
 import { getEmailByID, getChatID, getMetaData, encryptedAndEncodeURLKey, getFUBBootstrapData } from "./helpers";
+import { OutOf } from "./out-of";
 
 const appContainer = document.getElementById("app");
 const IframeData = () => {
@@ -16,12 +17,25 @@ const IframeData = () => {
       const id: string = pathNames[pathNames.length - 1] ?? "";
       const metaData: { listingId: string, userEmail: string } = await getMetaData();
       if (baseUrl.includes("https://www.findbusinesses4sale.com/listing") || baseUrl.includes("https://www.findbusinesses4sale.com/commercial-listing")) {
-        if (metaData.listingId === "N/A" || metaData.userEmail === "N/A") {
+        if (metaData.userEmail === "N/A") {
           setIframeContent(
             <ErrorMessage
-              err="An error occurred while getting data from metaData or user is not logged in, case: listing, commercial-listing"/>
+              padding="0 40px"
+              err="You are not logged in."
+              err2="Please, sign in [findbusinesses4sale.com] to view detailed information about listing."
+              link="https://www.findbusinesses4sale.com/login/"/>
           );
           console.info("An error occurred while getting data from metaData or user is not logged in, case: listing, commercial-listing");
+          return;
+        }
+        if (metaData.listingId === "N/A") {
+          setIframeContent(
+            <ErrorMessage
+              email="Write an Email"
+              err="This listing does not have MLS." err2="Please, inform the Administration."
+              link="mailto:willow@findbusinesses4sale.ca?subject=Listing%20does%20not%20have%20MLS"/>
+          );
+          console.info("An error occurred while getting data from metaData, case: listing, commercial-listing");
           return;
         }
 
@@ -37,7 +51,10 @@ const IframeData = () => {
         if (metaData.userEmail === "N/A") {
           setIframeContent(
             <ErrorMessage
-              err="An error occurred while getting data from metaData or user is not logged in, case: broker-dashboard"/>
+              padding="0 35px"
+              err="You are not logged in."
+              err2="Please, sign in [findbusinesses4sale.com] to view detailed information about your profile."
+              link="https://www.findbusinesses4sale.com/login/"/>
           );
           console.info("An error occurred while getting data from metaData or user is not logged in, case: broker-dashboard");
           return;
@@ -55,7 +72,9 @@ const IframeData = () => {
         if (!userEmail) {
           setIframeContent(
             <ErrorMessage
-              err="An error occurred while getting data from Pipedrive, case: deal"/>
+              email="Write an Email"
+              err="This Buyer does not have Email." err2="Please, inform the Developers."
+              link="mailto:oleg.lysytskyi@actse.ltd?subject=Buyer%20does%20not%20have%20Email"/>
           );
           console.info("An error occurred while getting data from Pipedrive, case: deal");
           return;
@@ -70,7 +89,10 @@ const IframeData = () => {
         if (base64 === null) {
           setIframeContent(
             <ErrorMessage
-              err="An error occurred while getting data from FollowUpBoss"/>
+              padding="0 40px"
+              email="Write an Email"
+              link="mailto:willow@findbusinesses4sale.ca?subject=Buyer%20does%20not%20have%20FB4S%20ID"
+              err="This Buyer does not have FB4S-ID." err2="Please, inform the Administration."/>
           );
           console.info("An error occurred while getting data from FollowUpBoss");
           return;
@@ -82,7 +104,8 @@ const IframeData = () => {
         if (!currentUserEmail) {
           setIframeContent(
             <ErrorMessage
-              err="An error occurred while getting data from FollowUpBoss, try to refresh the page"/>
+              padding="0 30px"
+              err="Chrome Extension can not define your FUB-Account." err2="Please, reload the page and try again."/>
           );
           console.info("An error occurred while getting data from FollowUpBoss");
           return;
@@ -96,9 +119,8 @@ const IframeData = () => {
         return;
       } else {
         setIframeContent(
-          <ErrorMessage
-            err="This page is out of ecosystem"/>
-        );
+          <OutOf/>
+        )
         console.info("This page is out of ecosystem");
         return;
       }
