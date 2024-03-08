@@ -36,7 +36,7 @@ export const OutOf = () => {
           textAlign: "center",
           margin: 0,
           padding: "5px"
-        }}>This browser’s page is out of ecosystem.</p>
+        }}>This browser’s page is out of the ecosystem.</p>
         <p
           style={{
             color: "white",
@@ -47,7 +47,7 @@ export const OutOf = () => {
             margin: 0,
             padding: "5px"
           }}
-        >Please, open the existing one:</p>
+        >Please open one of these existing pages:</p>
       </div>
       <div style={{
         display: "flex",

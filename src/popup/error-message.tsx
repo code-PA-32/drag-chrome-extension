@@ -1,11 +1,12 @@
 import React from "react";
 
-export const ErrorMessage = ({err, link, err2, padding, email}: {
+export const ErrorMessage = ({err, link, err2, padding, email, reload}: {
   err: string,
   link?: string,
   err2?: string,
   padding?: string
   email?:string
+  reload?: JSX.Element
 }) => {
   return (
     <div
@@ -53,7 +54,7 @@ export const ErrorMessage = ({err, link, err2, padding, email}: {
             margin: 0,
             padding:  "5px"
           }}
-        >{err2}</p>
+        >{reload ? reload : err2}</p>
       </div>
       {link && <a href={link} id="login" target="_blank" style={{
         color: "white",

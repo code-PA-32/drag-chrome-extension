@@ -20,9 +20,9 @@ const IframeData = () => {
         if (metaData.userEmail === "N/A") {
           setIframeContent(
             <ErrorMessage
-              padding="0 40px"
+              padding="0 25px"
               err="You are not logged in."
-              err2="Please, sign in [findbusinesses4sale.com] to view detailed information about listing."
+              err2="Please sign in to findbusinesses4sale.com to view detailed information about this listing."
               link="https://www.findbusinesses4sale.com/login/"/>
           );
           console.info("An error occurred while getting data from metaData or user is not logged in, case: listing, commercial-listing");
@@ -32,7 +32,7 @@ const IframeData = () => {
           setIframeContent(
             <ErrorMessage
               email="Write an Email"
-              err="This listing does not have MLS." err2="Please, inform the Administration."
+              err="This listing does not have MLS #." err2="Please inform Administration."
               link="mailto:willow@findbusinesses4sale.ca?subject=Listing%20does%20not%20have%20MLS"/>
           );
           console.info("An error occurred while getting data from metaData, case: listing, commercial-listing");
@@ -53,7 +53,7 @@ const IframeData = () => {
             <ErrorMessage
               padding="0 35px"
               err="You are not logged in."
-              err2="Please, sign in [findbusinesses4sale.com] to view detailed information about your profile."
+              err2="Please sign in to findbusinesses4sale.com to view detailed information about your profile."
               link="https://www.findbusinesses4sale.com/login/"/>
           );
           console.info("An error occurred while getting data from metaData or user is not logged in, case: broker-dashboard");
@@ -73,7 +73,7 @@ const IframeData = () => {
           setIframeContent(
             <ErrorMessage
               email="Write an Email"
-              err="This Buyer does not have Email." err2="Please, inform the Developers."
+              err="This Buyer does not have an Email address." err2="Please inform the Developers (see button)."
               link="mailto:oleg.lysytskyi@actse.ltd?subject=Buyer%20does%20not%20have%20Email"/>
           );
           console.info("An error occurred while getting data from Pipedrive, case: deal");
@@ -92,7 +92,7 @@ const IframeData = () => {
               padding="0 40px"
               email="Write an Email"
               link="mailto:willow@findbusinesses4sale.ca?subject=Buyer%20does%20not%20have%20FB4S%20ID"
-              err="This Buyer does not have FB4S-ID." err2="Please, inform the Administration."/>
+              err="This Buyer does not have an FB4S-ID #." err2="Please inform Administration."/>
           );
           console.info("An error occurred while getting data from FollowUpBoss");
           return;
@@ -104,8 +104,8 @@ const IframeData = () => {
         if (!currentUserEmail) {
           setIframeContent(
             <ErrorMessage
-              padding="0 30px"
-              err="Chrome Extension can not define your FUB-Account." err2="Please, reload the page and try again."/>
+              padding="0 50px"
+              err="Chrome Extension can’t find you." reload={<span>Please <span style={{textDecoration: "underline"}}>reload the page</span>  and try again.</span>}/>
           );
           console.info("An error occurred while getting data from FollowUpBoss");
           return;

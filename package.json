@@ -1,6 +1,6 @@
 {
   "name": "actse",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "TypeScript chrome extension",
   "main": "index.js",
   "scripts": {

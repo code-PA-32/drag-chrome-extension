@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Find Businesses 4 Sale",
   "description": "FB4S: Chrome Extension",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
