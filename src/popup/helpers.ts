@@ -1,6 +1,6 @@
 import cryptoJS from "crypto-js";
 
-export const getMetaData = async (): Promise<{ listingId: string, userEmail: string }> => {
+export const getMetaData = async (): Promise<{ listingMls: string, userEmail: string, listingId: string }> => {
   const data = await chrome.storage.local.get(["metaData"]);
   return data.metaData
 };
@@ -9,11 +9,14 @@ export const getFUBBootstrapData = async (): Promise<string | null> => {
   const data = await chrome.storage.local.get(["scriptList"]).then((res) => res.scriptList)
   if (!data) {
     console.info('Script not found');
-    return null;
+    return 'Script not found from storage (Data)';
   }
   const script = data && data.find((s: {
     innerText: string;
   }) => s.innerText.includes("FUBBootstrapData"))
+  if (!script) {
+    return 'FUBBootstrapData not found in script array (Script)';
+  }
   if (script) {
     const emailMatch = /"email"\s*:\s*"([^"]+)"/;
     const emailContent: string = script.innerText.match(emailMatch);
@@ -21,10 +24,10 @@ export const getFUBBootstrapData = async (): Promise<string | null> => {
       return emailContent[1];
     } else {
       console.info('Email not found');
-      return null;
+      return "Email not found in FUBBootstrapData (Inside Script)";
     }
   }
-  return null;
+  return 'End of function';
 };
 export const getEmailByID = async (id: string): Promise<string> => {
   if (!id) return;

@@ -1,12 +1,13 @@
 import React from "react";
 
-export const ErrorMessage = ({err, link, err2, padding, email, reload}: {
+export const ErrorMessage = ({err, link, err2, padding, email, reload, link2}: {
   err: string,
   link?: string,
   err2?: string,
   padding?: string
-  email?:string
+  email?: string
   reload?: JSX.Element
+  link2?: string
 }) => {
   return (
     <div
@@ -34,7 +35,7 @@ export const ErrorMessage = ({err, link, err2, padding, email, reload}: {
         }}>
         Attention!
       </p>
-      <div style={{display: "flex", flexDirection: "column", gap: "15px", padding:padding}}>
+      <div style={{display: "flex", flexDirection: "column", gap: "15px", padding: padding}}>
         <p style={{
           color: "white",
           textShadow: "2px 2px 4px rgba(217, 217, 217, 0.5)",
@@ -42,7 +43,7 @@ export const ErrorMessage = ({err, link, err2, padding, email, reload}: {
           fontWeight: "bold",
           textAlign: "center",
           margin: 0,
-          padding:  "5px"
+          padding: "5px"
         }}>{err}</p>
         <p
           style={{
@@ -52,7 +53,7 @@ export const ErrorMessage = ({err, link, err2, padding, email, reload}: {
             fontWeight: "bold",
             textAlign: "center",
             margin: 0,
-            padding:  "5px"
+            padding: "5px"
           }}
         >{reload ? reload : err2}</p>
       </div>
@@ -69,7 +70,22 @@ export const ErrorMessage = ({err, link, err2, padding, email, reload}: {
         background: "#85bf31",
         border: "2px solid #85bf31",
         filter: "drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06))"
-      }}>{email|| "Sign In"}</a>}
+      }}>{email || "Sign In"}</a>}
+      {link2 &&
+          <a href={link2} target="_blank" style={{
+            color: "white",
+            textShadow: "2px 2px 4px rgba(217, 217, 217, 0.5)",
+            fontSize: "15px",
+            textAlign: "center",
+            margin: 0,
+            padding: "10px",
+            borderRadius: "6px",
+            textDecoration: "none",
+            fontWeight: "bold",
+            background: "#85bf31",
+            border: "2px solid #85bf31",
+            filter: "drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06))"
+          }}>Visit FB4S Dashboard</a>}
       {!link && <div style={{
         padding: 30
       }}/>}
