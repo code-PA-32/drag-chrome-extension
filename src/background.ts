@@ -6,7 +6,7 @@ const addDiv = () => {
   const div = document.createElement('div')
   div.style.position = 'fixed'
   div.style.top = '0'
-  div.style.zIndex = '9999'
+  div.style.zIndex = '214748364'
   div.id = 'my-app-div'
   document.body.appendChild(div)
 }

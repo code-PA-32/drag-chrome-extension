@@ -2,7 +2,22 @@ import React, { useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import '../index.css'
 import { motion } from 'framer-motion'
-import { SquareX } from 'lucide-react'
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
+import Tab from '@mui/material/Tab'
+import TabContext from '@mui/lab/TabContext'
+import TabList from '@mui/lab/TabList'
+import TabPanel from '@mui/lab/TabPanel'
+import CloseIcon from '@mui/icons-material/Close'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import LaptopWindowsIcon from '@mui/icons-material/LaptopWindows'
+import SettingsIcon from '@mui/icons-material/Settings'
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'
+import InfoIcon from '@mui/icons-material/Info'
+import TextField from '@mui/material/TextField'
+import { Checkbox } from '@mui/material'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 
 const appContainer = document.getElementById('my-app-div')
 
@@ -35,96 +50,305 @@ const getPosition = async () => {
   }
 }
 
-const Draggable = () => {
-  const [position, setPosition] = useState({ top: 100, left: 200 })
-  const [size, setSize] = useState({ height: 400, width: 400 })
-  const ref = useRef(null)
-  const handleDragEnd = (event: any, info: any) => {
-    console.log('Drag End:', event)
-    console.log('Drag Info:', info)
+const getOpacity = async () => {
+  try {
+    const result = await chrome.storage.local.get(['popupOpacity'])
+    console.log('Retrieved opacity:', result.popupOpacity)
+    return result.popupOpacity || 0.8
+  } catch (error) {
+    console.error('Error retrieving opacity:', error)
+  }
+}
 
+const getNotes = async () => {
+  try {
+    const result = await chrome.storage.local.get(['notes'])
+    console.log('Retrieved notes:', result.notes)
+    return result.notes || []
+  } catch (error) {
+    console.error('Error retrieving notes:', error)
+  }
+}
+
+const Draggable = () => {
+  const [value, setValue] = React.useState('1')
+  const [position, setPosition] = useState<null | { top: number, left: number }>(null)
+  const [size, setSize] = useState<null | { height: string, width: string }>(null)
+  const [view, setView] = React.useState<'sm' | 'md' | 'lg'>('sm')
+  const ref = useRef(null)
+  const [opacity, setOpacity] = useState('0.8')
+  const [notes, setNotes] = useState('')
+  const [currentNotes, setCurrentNotes] = useState<{
+    note: string,
+    id: number,
+    link?: string
+  }[]>([])
+  const [checked, setChecked] = useState(false)
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setValue(newValue)
+  }
+  const handleDragEnd = () => {
     if (ref.current) {
       const rect = ref.current.getBoundingClientRect()
       void chrome.storage.local.set({
         popupPosition: {
-          top: rect.y.toFixed(0),
-          left: rect.x.toFixed(0),
+          top: rect.y.toFixed(0) ?? 100,
+          left: rect.x.toFixed(0) ?? 100,
         },
       })
-      console.log('Element position:', rect)
     }
   }
 
-
   const setSmallPopup = async () => {
-    const newSize = { height: 400, width: 400 };
-    await chrome.storage.local.set({ popupSize: newSize });
-    setSize(newSize);
-  };
+    const newSize = { height: '400px', width: '400px' }
+    await chrome.storage.local.set({ popupSize: newSize })
+    setSize(newSize)
+  }
 
   const setMediumPopup = async () => {
-    const newSize = { height: 600, width: 500 };
-    await chrome.storage.local.set({ popupSize: newSize });
-    setSize(newSize);
-  };
+    const newSize = { height: '600px', width: '500px' }
+    await chrome.storage.local.set({ popupSize: newSize })
+    setSize(newSize)
+  }
 
   const setLargePopup = async () => {
-    const newSize = { height: 800, width: 600 };
-    await chrome.storage.local.set({ popupSize: newSize });
-    setSize(newSize);
-  };
+    const newSize = { height: '100vh', width: '600px' }
+    await chrome.storage.local.set({ popupSize: newSize })
+    await chrome.storage.local.set({
+      popupPosition: {
+        top: 0,
+        left: position.left,
+      },
+    })
+    setPosition({ top: 0, left: position.left })
+    setSize(newSize)
+  }
+  const handleChangeSize = (event: React.MouseEvent<HTMLElement>, nextView: 'sm' | 'md' | 'lg') => {
+    nextView === 'sm' && setSmallPopup() || nextView === 'md' && setMediumPopup() || nextView === 'lg' && setLargePopup()
+    setView(nextView)
+  }
 
+  const addOpacity = () => {
+    const currentOpacity = parseFloat(opacity)
+    if (currentOpacity < 1) {
+      const newOpacity = ( currentOpacity + 0.1 ).toFixed(1)
+      setOpacity(newOpacity)
+      void chrome.storage.local.set({ popupOpacity: newOpacity })
+    }
+  }
+  const removeOpacity = () => {
+    const currentOpacity = parseFloat(opacity)
+    if (currentOpacity > 0.1) {
+      const newOpacity = ( currentOpacity - 0.1 ).toFixed(1)
+      setOpacity(newOpacity)
+      void chrome.storage.local.set({ popupOpacity: newOpacity })
+    }
+  }
+  const addNotes = () => {
+    const newNote = {
+      note: notes,
+      id: new Date().getMilliseconds(),
+      link: checked ? window.location.href : undefined,
+    }
+    setCurrentNotes([...currentNotes, newNote])
+    void chrome.storage.local.get('notes', (result) => {
+      const currentNotes = result.notes || []
+      currentNotes.push(newNote)
+      void chrome.storage.local.set({ notes: currentNotes })
+    })
+    setNotes('')
+  }
+  const deleteNote = async (noteToDelete: number) => {
+    try {
+      const result = await chrome.storage.local.get(['notes'])
+      const currentNotes = result.notes || []
+
+      const newList = currentNotes.filter((it) => it.id !== noteToDelete)
+
+      await chrome.storage.local.set({ notes: newList })
+      setCurrentNotes(newList)
+      console.log('Updated notes:', newList)
+    } catch (error) {
+      console.error('Error deleting note:', error)
+    }
+  }
 
   useEffect(() => {
     const fetchSettings = async () => {
-      const storedPosition = await getPosition();
-      const storedSize = await getPopupSize();
+      const storedPosition = await getPosition()
+      const storedSize = await getPopupSize()
+      const storedOpacity = await getOpacity()
+      const storedNotes = await getNotes()
       setPosition({
         top: parseFloat(storedPosition.top),
         left: parseFloat(storedPosition.left),
-      });
-      setSize(storedSize);
-    };
-    void fetchSettings();
-  }, []);
+      })
+      setSize(storedSize)
+      setView(storedSize.width === '400px' ? 'sm' : storedSize.width === '500px' ? 'md' : 'lg')
+      setOpacity(storedOpacity)
+      setCurrentNotes(storedNotes)
+    }
+    void fetchSettings()
+  }, [])
 
   return (
-    <motion.div
-      drag
-      dragMomentum={false}
-      ref={ref}
-      onDragEnd={handleDragEnd}
-      style={{
-        position: 'fixed',
-        top: position.top + 'px',
-        left: position.left + 'px',
-        height: size.height + 'px',
-        width: size.width + 'px',
-        zIndex: 500,
-      }}
-      whileDrag={{ opacity: 0.8 }}
-      whileHover={{ opacity: 1 }}
-      initial={{ opacity: 0.8 }}
-      className="!bg-orange-400 !p-4 !rounded-lg !shadow-lg !z-50 !relative !overflow-scroll"
-    >
-      <div>
-        Drag me around!
-      </div>
-      <div>
-        <h1>Popup</h1>
-        <div className="flex gap-2">
-          <button onClick={setSmallPopup}>SM</button>
-          <button onClick={setMediumPopup}>MD</button>
-          <button onClick={setLargePopup}>LG</button>
-        </div>
+    <>
+      {position && (
+        <motion.div
+          drag
+          dragMomentum={false}
+          ref={ref}
+          onDragEnd={handleDragEnd}
+          style={{
+            position: 'relative',
+            top: position.top + 'px',
+            left: position.left + 'px',
+            height: size.height,
+            width: size.width,
+            zIndex: 214748364,
+            overflow: 'scroll',
+            borderRadius: '8px',
+            background: 'rgb(210, 135, 57)',
+          }}
+          whileDrag={{ opacity: 0.8 }}
+          whileHover={{ opacity: 1 }}
+          initial={{ opacity: opacity }}
 
-      </div>
-      <button onClick={closePopup}
-              style={{ top: '8px', right: '8px', position: 'absolute' }}
-              className="!absolute !top-2 !right-2 !size-6 !rounded-none !border-none !bg-transparent !p-0">
-        <SquareX className="!text-white"/></button>
-      <button onClick={openNotification}>notification</button>
-    </motion.div>
+        >
+          <Box sx={{ width: '100%', typography: 'body1' }}>
+            <TabContext value={value}>
+              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <TabList onChange={handleChange} aria-label="lab API tabs example">
+                  <Tab value="1" icon={<SettingsIcon fontSize="small"/>} sx={{ padding: 0 }}/>
+                  <Tab value="2" icon={<NotificationsActiveIcon fontSize="small"/>}/>
+                  <Tab value="3" icon={<InfoIcon fontSize="small"/>}/>
+                </TabList>
+              </Box>
+              <TabPanel value="1">
+                <div>
+                  <ToggleButtonGroup
+                    orientation="horizontal"
+                    value={view}
+                    exclusive
+                    onChange={handleChangeSize}
+                  >
+                    <ToggleButton value="sm" aria-label="sm" sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyItems: 'center',
+                      gap: '5px',
+                    }}>
+                      SM
+                      <LaptopWindowsIcon/>
+                    </ToggleButton>
+                    <ToggleButton value="md" aria-label="md" sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyItems: 'center',
+                      gap: '5px',
+                    }}>
+                      MD
+                      <LaptopWindowsIcon/>
+                    </ToggleButton>
+                    <ToggleButton value="lg" aria-label="lg" sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyItems: 'center',
+                      gap: '5px',
+                    }}>
+                      LG
+                      <LaptopWindowsIcon/>
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                </div>
+                <div>
+                  Set opacity when is no active window
+                  <Box sx={{
+                    display: 'flex',
+                    gap: '5px',
+                    alignItems: 'center',
+                    justifyItems: 'center',
+                  }}>
+                    <Button variant="contained" onClick={removeOpacity}>-</Button>
+                    <p>{opacity}</p>
+                    <Button onClick={addOpacity} variant="contained">+</Button>
+                  </Box>
+
+                </div>
+              </TabPanel>
+              <TabPanel value="2">
+                SOME DATA
+              </TabPanel>
+              <TabPanel value="3">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <TextField className="some" value={notes} sx={{ bg: 'transparent' }} size="small"
+                               variant="standard" label="Note text"
+                               onChange={e => setNotes(e.target.value)}/>
+                    <Button variant="contained" onClick={addNotes}>Add</Button>
+                    <label htmlFor="check" style={{
+                      display: 'flex',
+                      gap: '5px',
+                      justifyItems: 'center',
+                      alignItems: 'center',
+                      font: '16px',
+                      fontWeight: 'normal',
+                    }}>
+                      <Checkbox value={checked} id="check" onChange={() => setChecked(!checked)}/>
+                      Do you want to attach a link?
+                    </label>
+                  </div>
+                  <ul style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px',
+                    listStyle: 'none',
+                  }}>
+                    {currentNotes.map((it) => (
+                      <li key={it.id} style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        justifyItems: 'center',
+                        borderBottom: '1px solid black',
+                        paddingBottom: '5px',
+                        paddingTop: '5px',
+                      }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          {it.note}
+                          {it.link && <a href={it.link} target="_blank" style={{
+                            textDecoration: 'none',
+                            font: '16px',
+                            fontWeight: 'normal',
+                            color: 'blue',
+                          }}>Attached link</a>}
+                        </div>
+                        <span
+                          style={{
+                            cursor: 'pointer',
+                            height:"max-content",
+                            padding: '2px',
+                            background: 'rgba(255,0,0,0.69)',
+                            borderRadius: '2px',
+                          }}
+                          onClick={() => deleteNote(it.id)}
+                        ><DeleteForeverIcon fontSize="small"/></span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </TabPanel>
+            </TabContext>
+          </Box>
+
+          <Button variant="contained" onClick={closePopup}
+                  style={{ top: '8px', right: '8px', position: 'absolute' }}>
+            <CloseIcon/>
+          </Button>
+          <Button variant="contained" onClick={openNotification}>Notification</Button>
+        </motion.div>
+      )
+      }
+    </>
   )
 }
 
