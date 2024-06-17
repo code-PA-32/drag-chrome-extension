@@ -2,22 +2,24 @@ import React, { useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import '../index.css'
 import { motion } from 'framer-motion'
-import Button from '@mui/material/Button'
-import Box from '@mui/material/Box'
-import Tab from '@mui/material/Tab'
-import TabContext from '@mui/lab/TabContext'
-import TabList from '@mui/lab/TabList'
-import TabPanel from '@mui/lab/TabPanel'
-import CloseIcon from '@mui/icons-material/Close'
-import ToggleButton from '@mui/material/ToggleButton'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import LaptopWindowsIcon from '@mui/icons-material/LaptopWindows'
-import SettingsIcon from '@mui/icons-material/Settings'
-import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'
-import InfoIcon from '@mui/icons-material/Info'
-import TextField from '@mui/material/TextField'
-import { Checkbox } from '@mui/material'
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import {
+  Close,
+  LaptopWindows,
+  Settings,
+  NotificationsActive,
+  Info,
+  DeleteForever,
+} from '@mui/icons-material'
+import { TabContext, TabPanel, TabList } from '@mui/lab'
+import {
+  Checkbox,
+  TextField,
+  ToggleButtonGroup,
+  Button,
+  Box,
+  Tab,
+  ToggleButton,
+} from '@mui/material'
 
 const appContainer = document.getElementById('my-app-div')
 
@@ -79,7 +81,7 @@ const Draggable = () => {
   const [opacity, setOpacity] = useState('0.8')
   const [notes, setNotes] = useState('')
   const [currentNotes, setCurrentNotes] = useState<{
-    note: string,
+    title: string,
     id: number,
     link?: string
   }[]>([])
@@ -123,10 +125,11 @@ const Draggable = () => {
     setPosition({ top: 0, left: position.left })
     setSize(newSize)
   }
-  const handleChangeSize = (event: React.MouseEvent<HTMLElement>, nextView: 'sm' | 'md' | 'lg') => {
+  const handleChangeSize = (_, nextView: 'sm' | 'md' | 'lg') => {
     nextView === 'sm' && setSmallPopup() || nextView === 'md' && setMediumPopup() || nextView === 'lg' && setLargePopup()
     setView(nextView)
   }
+
 
   const addOpacity = () => {
     const currentOpacity = parseFloat(opacity)
@@ -144,12 +147,15 @@ const Draggable = () => {
       void chrome.storage.local.set({ popupOpacity: newOpacity })
     }
   }
+
+
   const addNotes = () => {
     const newNote = {
-      note: notes,
-      id: new Date().getMilliseconds(),
+      title: notes,
+      id: new Date().getTime(),
       link: checked ? window.location.href : undefined,
     }
+
     setCurrentNotes([...currentNotes, newNote])
     void chrome.storage.local.get('notes', (result) => {
       const currentNotes = result.notes || []
@@ -158,12 +164,13 @@ const Draggable = () => {
     })
     setNotes('')
   }
+
   const deleteNote = async (noteToDelete: number) => {
     try {
       const result = await chrome.storage.local.get(['notes'])
       const currentNotes = result.notes || []
 
-      const newList = currentNotes.filter((it) => it.id !== noteToDelete)
+      const newList = currentNotes.filter((it: { id: number }) => it.id !== noteToDelete)
 
       await chrome.storage.local.set({ notes: newList })
       setCurrentNotes(newList)
@@ -219,9 +226,9 @@ const Draggable = () => {
             <TabContext value={value}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChange} aria-label="lab API tabs example">
-                  <Tab value="1" icon={<SettingsIcon fontSize="small"/>} sx={{ padding: 0 }}/>
-                  <Tab value="2" icon={<NotificationsActiveIcon fontSize="small"/>}/>
-                  <Tab value="3" icon={<InfoIcon fontSize="small"/>}/>
+                  <Tab value="1" icon={<Settings fontSize="small"/>} sx={{ padding: 0 }}/>
+                  <Tab value="2" icon={<NotificationsActive fontSize="small"/>}/>
+                  <Tab value="3" icon={<Info fontSize="small"/>}/>
                 </TabList>
               </Box>
               <TabPanel value="1">
@@ -239,7 +246,7 @@ const Draggable = () => {
                       gap: '5px',
                     }}>
                       SM
-                      <LaptopWindowsIcon/>
+                      <LaptopWindows/>
                     </ToggleButton>
                     <ToggleButton value="md" aria-label="md" sx={{
                       display: 'flex',
@@ -248,7 +255,7 @@ const Draggable = () => {
                       gap: '5px',
                     }}>
                       MD
-                      <LaptopWindowsIcon/>
+                      <LaptopWindows/>
                     </ToggleButton>
                     <ToggleButton value="lg" aria-label="lg" sx={{
                       display: 'flex',
@@ -257,7 +264,7 @@ const Draggable = () => {
                       gap: '5px',
                     }}>
                       LG
-                      <LaptopWindowsIcon/>
+                      <LaptopWindows/>
                     </ToggleButton>
                   </ToggleButtonGroup>
                 </div>
@@ -281,11 +288,14 @@ const Draggable = () => {
               </TabPanel>
               <TabPanel value="3">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <TextField className="some" value={notes} sx={{ bg: 'transparent' }} size="small"
-                               variant="standard" label="Note text"
-                               onChange={e => setNotes(e.target.value)}/>
-                    <Button variant="contained" onClick={addNotes}>Add</Button>
+                  <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+                    <div>
+                      <TextField className="some" value={notes} sx={{ bg: 'transparent' }}
+                                 size="small"
+                                 variant="standard" label="Note text"
+                                 onChange={e => setNotes(e.target.value)}/>
+                      <Button variant="contained" size="small" onClick={addNotes}>Add</Button>
+                    </div>
                     <label htmlFor="check" style={{
                       display: 'flex',
                       gap: '5px',
@@ -314,7 +324,7 @@ const Draggable = () => {
                         paddingTop: '5px',
                       }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                          {it.note}
+                          {it.title}
                           {it.link && <a href={it.link} target="_blank" style={{
                             textDecoration: 'none',
                             font: '16px',
@@ -325,13 +335,13 @@ const Draggable = () => {
                         <span
                           style={{
                             cursor: 'pointer',
-                            height:"max-content",
+                            height: 'max-content',
                             padding: '2px',
                             background: 'rgba(255,0,0,0.69)',
                             borderRadius: '2px',
                           }}
                           onClick={() => deleteNote(it.id)}
-                        ><DeleteForeverIcon fontSize="small"/></span>
+                        ><DeleteForever fontSize="small"/></span>
                       </li>
                     ))}
                   </ul>
@@ -339,10 +349,9 @@ const Draggable = () => {
               </TabPanel>
             </TabContext>
           </Box>
-
           <Button variant="contained" onClick={closePopup}
                   style={{ top: '8px', right: '8px', position: 'absolute' }}>
-            <CloseIcon/>
+            <Close/>
           </Button>
           <Button variant="contained" onClick={openNotification}>Notification</Button>
         </motion.div>

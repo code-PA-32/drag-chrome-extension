@@ -107,7 +107,7 @@ chrome.runtime.onMessage.addListener((message, _, __) => {
 })
 
 chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
+  function(request, _, __) {
     if (request.action == "showNotification") {
       chrome.notifications.create('testNotification', {
         type: 'basic',
